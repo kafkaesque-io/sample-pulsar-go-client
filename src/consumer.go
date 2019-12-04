@@ -12,13 +12,20 @@ import (
 func main() {
 	fmt.Println("Pulsar Consumer")
 
+	// Configuration variables pertaining to this consumer
 	tokenStr := "{JWT token}"
+	uri := "pulsar+ssl://{host}:6651"
+	trustStore := "/etc/ssl/certs/ca-bundle.crt"
+	topicName := "persistent://{tenant}/{namespace}/{topic}"
+	subscriptionName := "my-subscription"
+
 	token := pulsar.NewAuthenticationToken(tokenStr)
 
 	// Pulsar client
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
-		URL: "pulsar+ssl://{host}:6651",
-		Authentication: token,
+		URL:                   uri,
+		Authentication:        token,
+		TLSTrustCertsFilePath: trustStore,
 	})
 
 	if err != nil {
@@ -28,8 +35,8 @@ func main() {
 	defer client.Close()
 
 	consumer, err := client.Subscribe(pulsar.ConsumerOptions{
-		Topic:            "persistent://{tenant}/{namespace}/{topic}",
-		SubscriptionName: "my-subscription",
+		Topic:            topicName,
+		SubscriptionName: subscriptionName,
 	})
 
 	if err != nil {
@@ -40,6 +47,7 @@ func main() {
 
 	ctx := context.Background()
 
+	// infinite loop to receive messages
 	for {
 		msg, err := consumer.Receive(ctx)
 		if err != nil {
@@ -49,7 +57,6 @@ func main() {
 		}
 
 		consumer.Ack(msg)
-
 	}
 
 }

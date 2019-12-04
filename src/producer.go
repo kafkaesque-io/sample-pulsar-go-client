@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-
 	"log"
 
 	"github.com/apache/pulsar/pulsar-client-go/pulsar"
@@ -11,14 +10,20 @@ import (
 
 // Note: relace JWT token, tenant, namespace, and topic
 func main() {
-	fmt.Println("Pulsar Consumer")
+	fmt.Println("Pulsar Producer")
 
+	// Configuration variables pertaining to this producer
 	tokenStr := "{JWT token}"
+	uri := "pulsar+ssl://{host}:6651"
+	trustStore := "/etc/ssl/certs/ca-bundle.crt"
+	topicName := "persistent://{tenant}/{namespace}/{topic}"
+
 	token := pulsar.NewAuthenticationToken(tokenStr)
 
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
-		URL:                     "pulsar+ssl://{host}:6651",
+		URL:                     uri,
 		Authentication:          token,
+		TLSTrustCertsFilePath:   trustStore,
 		IOThreads:               3,
 		OperationTimeoutSeconds: 5,
 	})
@@ -33,7 +38,7 @@ func main() {
 
 	// Use the client to instantiate a producer
 	producer, err := client.CreateProducer(pulsar.ProducerOptions{
-		Topic: "persistent://{tenant}/{namespace}/{topic}",
+		Topic: topicName,
 	})
 
 	log.Printf("checking error of producer creation...")

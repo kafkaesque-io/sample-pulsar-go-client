@@ -9,6 +9,8 @@ Install the library package.
 $ go get -u github.com/apache/pulsar/pulsar-client-go/pulsar
 ```
 
+Replace correct pulsar URL, token and topic name in both consumer.go and producer.go files.
+
 Start consumer
 ```bash
 $ cd src
