@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
-	"github.com/apache/pulsar/pulsar-client-go/pulsar"
+	"github.com/apache/pulsar-client-go/pulsar"
 )
 
 // Note: relace JWT token, tenant, namespace, and topic
 func main() {
-	fmt.Println("Pulsar Producer")
+	log.Println("Pulsar Producer")
 
 	// Configuration variables pertaining to this producer
 	tokenStr := "{JWT token}"
@@ -21,11 +22,11 @@ func main() {
 	token := pulsar.NewAuthenticationToken(tokenStr)
 
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
-		URL:                     uri,
-		Authentication:          token,
-		TLSTrustCertsFilePath:   trustStore,
-		IOThreads:               3,
-		OperationTimeoutSeconds: 5,
+		URL:                   uri,
+		Authentication:        token,
+		TLSTrustCertsFilePath: trustStore,
+		OperationTimeout:      30 * time.Second,
+		ConnectionTimeout:     30 * time.Second,
 	})
 
 	if err != nil {
@@ -61,9 +62,11 @@ func main() {
 		}
 
 		// Attempt to send the message
-		if err := producer.Send(ctx, msg); err != nil {
+		messageID, err := producer.Send(ctx, &msg)
+		if err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("the %s successfully published with the message ID %v\n", string(msg.Payload), messageID)
 
 		// Create a different message to send asynchronously
 		asyncMsg := pulsar.ProducerMessage{
@@ -71,12 +74,12 @@ func main() {
 		}
 
 		// Attempt to send the message asynchronously and handle the response
-		producer.SendAsync(ctx, asyncMsg, func(msg pulsar.ProducerMessage, err error) {
+		producer.SendAsync(ctx, &asyncMsg, func(msgID pulsar.MessageID, msg *pulsar.ProducerMessage, err error) {
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			fmt.Printf("the %s successfully published\n", string(msg.Payload))
+			log.Printf("the %s successfully published with the message ID %v\n", string(msg.Payload), msgID)
 		})
 	}
 }

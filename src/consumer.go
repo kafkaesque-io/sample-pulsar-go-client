@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/apache/pulsar/pulsar-client-go/pulsar"
+	"github.com/apache/pulsar-client-go/pulsar"
 )
 
 // Note: relace JWT token, host, tenant, namespace, and topic

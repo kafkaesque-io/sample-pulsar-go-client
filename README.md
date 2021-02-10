@@ -4,9 +4,9 @@ The sample is based on the [Pulsar Go client library's reference implmentation](
 
 ## Set up
 
-Install the library package.
+Clone the repo under this directory path
 ```bash
-$ go get -u github.com/apache/pulsar/pulsar-client-go/pulsar
+~/go/src/github.com/kafkaesque-io
 ```
 
 Replace correct pulsar URL, token and topic name in both consumer.go and producer.go files.
