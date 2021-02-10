@@ -13,11 +13,10 @@ Replace correct pulsar URL, token and topic name in both consumer.go and produce
 
 Start consumer
 ```bash
-$ cd src
-$ go run consumer.go
+$ go run ./src/consumer.go
 ```
 
 Start producer
 ```bash
-$ go run producer.go
+$ go run ./src/producer.go
 ```
